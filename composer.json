@@ -1,0 +1,5 @@
+{
+	"require": {
+		"danielstjules/stringy": "~1.7"
+	}
+}
