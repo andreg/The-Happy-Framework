@@ -47,21 +47,21 @@ class THB_Framework {
 	 *
 	 * @var THB_AdminController
 	 */
-	public $admin = null;
+	private $_admin = null;
 
 	/**
 	 * The frontend controller.
 	 *
 	 * @var THB_FrontendController
 	 */
-	public $frontend = null;
+	private $_frontend = null;
 
 	/**
 	 * The login controller.
 	 *
 	 * @var THB_LoginController
 	 */
-	public $login = null;
+	private $_login = null;
 
 	/**
 	 * Contructor for the main framework class. This function defines a list of
@@ -131,13 +131,13 @@ class THB_Framework {
 		$this->_i18n();
 
 		/* Instantiate the controller of the admin area. */
-		$this->admin = new THB_AdminController();
+		$this->_admin = new THB_AdminController();
 
 		/* Instantiate the controller of the theme frontend. */
-		$this->frontend = new THB_FrontendController();
+		$this->_frontend = new THB_FrontendController();
 
 		/* Instantiate the controller of the theme login and registration screens. */
-		$this->login = new THB_LoginController();
+		$this->_login = new THB_LoginController();
 	}
 
 	/**
@@ -164,6 +164,9 @@ class THB_Framework {
 	 */
 	private function _includes_core()
 	{
+		/* List array wrapper. */
+		require_once( THB_FRAMEWORK_CLASSES_FOLDER . 'core/libs/thb_list.php' );
+
 		/* Pages controller. */
 		require_once( THB_FRAMEWORK_CLASSES_FOLDER . 'core/thb_controller.php' );
 
@@ -178,6 +181,44 @@ class THB_Framework {
 
 		/* Fields. */
 		require_once( THB_FRAMEWORK_CLASSES_FOLDER . 'core/thb_field.php' );
+
+		/* Fields container. */
+		require_once( THB_FRAMEWORK_CLASSES_FOLDER . 'core/thb_fields_container.php' );
+
+		/* Meta box fields container. */
+		require_once( THB_FRAMEWORK_CLASSES_FOLDER . 'core/fields_containers/thb_meta_box.php' );
+	}
+
+	/**
+	 * Return the instance of the admin controller.
+	 *
+	 * @since 1.0.0
+	 * @return THB_AdminController The instance of the admin controller.
+	 */
+	public function admin()
+	{
+		return $this->_admin;
+	}
+
+	/**
+	 * Return the instance of the frontend controller.
+	 * @since 1.0.0
+	 * @return THB_FrontendController The instance of the frontend controller.
+	 */
+	public function frontend()
+	{
+		return $this->_frontend;
+	}
+
+	/**
+	 * Return the instance of the login controller.
+	 *
+	 * @since 1.0.0
+	 * @return THB_LoginController The instance of the login controller.
+	 */
+	public function login()
+	{
+		return $this->_login;
 	}
 
 	/**
@@ -200,3 +241,5 @@ class THB_Framework {
 
 /* Let the fun begin! */
 THB_Framework::instance();
+
+require 'test.php';

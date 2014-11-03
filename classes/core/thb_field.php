@@ -28,7 +28,7 @@ abstract class THB_Field {
 	 *
 	 * @var string
 	 */
-	public $handle = '';
+	private $handle = '';
 
 	/**
 	 * The field data value.
@@ -48,10 +48,12 @@ abstract class THB_Field {
 	 * Constructor for the field class.
 	 *
 	 * @param string $handle A slug-like definition of the field handle.
+	 * @param string $type A slug-like definition of the field type.
 	 * @since 1.0.0
 	 */
-	function __construct( $handle )
+	function __construct( $handle, $type )
 	{
+		$this->_type = $type;
 		$this->handle = $handle;
 	}
 
@@ -163,6 +165,41 @@ abstract class THB_Field {
 	protected function handle()
 	{
 		return $this->handle;
+	}
+
+	public function render()
+	{
+		echo "<pre>" . print_r( "Field: {$this->handle}, {$this->value()}", true ) . "</pre>";
+	}
+
+	/**
+	 * Validate the field declaration structure.
+	 *
+	 * @since 1.0.0
+	 * @param array $field The field declaration structure.
+	 * @return boolean
+	 */
+	public static function validate_structure( $field )
+	{
+		$field_types = array_keys( apply_filters( 'thb_field_types', array() ) );
+
+		if ( ! is_array( $field ) || empty( $field ) ) {
+			return false;
+		}
+		elseif ( ! array_key_exists( 'type', $field ) || empty( $field['type'] ) ) {
+			return false;
+		}
+		elseif ( array_search( $field['type'], $field_types, true ) === false ) {
+			return false;
+		}
+		elseif ( ! array_key_exists( 'handle', $field ) || empty( $field['handle'] ) ) {
+			return false;
+		}
+		elseif ( ! array_key_exists( 'label', $field ) || empty( $field['label'] ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 }

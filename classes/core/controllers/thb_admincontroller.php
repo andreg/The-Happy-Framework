@@ -35,4 +35,22 @@ class THB_AdminController extends THB_Controller {
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), apply_filters( 'thb_admin_enqueue_scripts_priority', 20 ) );
 	}
 
+	/**
+	 * Register and add a meta box to the admin interface binding it to one or
+	 * more specific post types.
+	 *
+	 * @since 1.0.0
+	 * @param string $handle A slug-like definition of the meta box.
+	 * @param string $title A human-readable definition of the meta box.
+	 * @param string|array $post_types A string or array of post types handles.
+	 * @param array $fields An array containing a default set of fields that belong to the meta box.
+	 * @return THB_MetaBox
+	 */
+	public function add_meta_box( $handle, $title, $post_types = 'post', $fields = array() )
+	{
+		$post_types = apply_filters( "thb_{$handle}_metabox_post_types", $post_types );
+
+		return new THB_MetaBox( $handle, $title, $post_types, $fields );
+	}
+
 }
