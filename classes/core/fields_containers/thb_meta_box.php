@@ -59,16 +59,16 @@ class THB_MetaBox extends THB_FieldsContainer {
 
 	public function render()
 	{
-		$this->render_fields();
+		$this->render_elements();
 	}
 
 	/**
-	 * Return the list of the fields that belong to the fields container.
+	 * Return the list of the elements that belong to the fields container.
 	 *
 	 * @since 1.0.0
 	 * @return array An array of field data.
 	 */
-	public function fields()
+	public function elements()
 	{
 		global $post;
 		$current_screen = get_current_screen();
@@ -81,10 +81,8 @@ class THB_MetaBox extends THB_FieldsContainer {
 			$fields = apply_filters( "thb[post_type:{$post_type}][metabox:{$this->handle()}][template:{$page_template}]", $fields );
 		}
 
-		foreach ( $fields as $index => $field ) {
-			if ( ! THB_Field::validate_structure( $field ) ) {
-				unset( $fields[$index] );
-			}
+		if ( ! self::_validate_fields_structure( $fields ) ) {
+			return false;
 		}
 
 		return $fields;

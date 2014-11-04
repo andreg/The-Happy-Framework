@@ -100,37 +100,107 @@ abstract class THB_FieldsContainer {
 		$this->_fields[] = $field;
 	}
 
-	protected function render_fields()
+	/**
+	 * Render a field in the fields container.
+	 *
+	 * @since 1.0.0
+	 * @param array $element The field data.
+	 */
+	private function render_field( $element )
 	{
-		$fields = $this->fields();
+		$field_types = apply_filters( 'thb_field_types', array() );
+		$field_class = $field_types[$element['type']];
+		$thb_field = new $field_class( $element['handle'] );
 
-		if ( ! empty( $fields ) ) {
-			$field_types = apply_filters( 'thb_field_types', array() );
+		if ( isset( $element['default'] ) ) {
+			$thb_field->default_value( $element['default'] );
+		}
 
-			foreach ( $fields as $field_structure ) {
-				$field_class = $field_types[$field_structure['type']];
-				$thb_field = new $field_class( $field_structure['handle'] );
+		if ( isset( $element['value'] ) ) {
+			$thb_field->value( $element['value'] );
+		}
 
-				if ( isset( $field_structure['default'] ) ) {
-					$thb_field->default_value( $field_structure['default'] );
+		$thb_field->render();
+	}
+
+	/**
+	 * Render a group of fields in the fields container.
+	 *
+	 * @since 1.0.0
+	 * @param array $element The group data.
+	 */
+	private function render_group( $group )
+	{
+		foreach ( $group['fields'] as $index => $field ) {
+			$this->render_field( $field );
+		}
+	}
+
+	/**
+	 * Render the fields container fields.
+	 *
+	 * @since 1.0.0
+	 */
+	protected function render_elements()
+	{
+		$elements = $this->elements();
+
+		if ( ! empty( $elements ) ) {
+			foreach ( $elements as $index => $element ) {
+				if ( $element['type'] === 'group' ) {
+					$this->render_group( $element );
 				}
-
-				if ( isset( $field_structure['value'] ) ) {
-					$thb_field->value( $field_structure['value'] );
+				else {
+					$this->render_field( $element );
 				}
-
-				$thb_field->render();
 			}
 		}
 	}
 
 	/**
-	 * Return the list of the fields that belong to the fields container.
+	 * Validate a fields container fields structure. This method ensures that
+	 * the provided structure for the fields container doesn't lead to
+	 * inconsistencies.
+	 * If the validator fails, the fields container will display no fields at
+	 * all.
 	 *
 	 * @since 1.0.0
-	 * @return array An array of field data.
+	 * @param array $elements The fields container fields structure.
+	 * @return boolean
 	 */
-	abstract public function fields();
+	protected static function _validate_fields_structure( $elements )
+	{
+		$groups = 0;
+
+		foreach ( $elements as $index => $element ) {
+			if ( $element['type'] === 'group' && array_key_exists( 'fields', $element ) && is_array( $element['fields'] ) ) {
+				$groups++;
+
+				if ( ! self::_validate_fields_structure( $element['fields'] ) ) {
+					return false;
+				}
+			}
+			else {
+				if ( ! THB_Field::validate_structure( $element ) ) {
+					return false;
+				}
+			}
+		}
+
+		if ( $groups > 0 && $groups !== count( $elements ) ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * Return the list of the elements that belong to the fields container.
+	 *
+	 * @since 1.0.0
+	 * @return array An array of elements data.
+	 */
+	abstract public function elements();
 
 	/**
 	 * Display the fields container.
