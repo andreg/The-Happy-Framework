@@ -8,11 +8,11 @@ class THB_TextField extends THB_Field {
 }
 
 $thb_meta_box = thb_fw()->admin()->add_meta_box( 'asd', 'Asd', array( 'post', 'page' ), array(
-	array(
-		'type'   => 'text',
-		'handle' => 'test',
-		'label'  => 'A text field'
-	),
+	// array(
+	// 	'type'   => 'text',
+	// 	'handle' => 'test',
+	// 	'label'  => 'A text field'
+	// ),
 	array(
 		'type'   => 'group',
 		'handle' => 'options',
@@ -21,12 +21,15 @@ $thb_meta_box = thb_fw()->admin()->add_meta_box( 'asd', 'Asd', array( 'post', 'p
 			array(
 				'type'   => 'text',
 				'handle' => 'test_2',
-				'label'  => 'A text field #2'
+				'label'  => 'A text field #2',
+				'help' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit.',
+				'default' => 'Bon Jovi'
 			),
 			array(
 				'type'   => 'text',
 				'handle' => 'test_3',
-				'label'  => 'A text field #3'
+				'label'  => 'A text field #3',
+				'default' => 'Stratocaster'
 			)
 		)
 	)

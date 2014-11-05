@@ -120,6 +120,14 @@ abstract class THB_FieldsContainer {
 			$thb_field->value( $element['value'] );
 		}
 
+		if ( isset( $element['label'] ) ) {
+			$thb_field->label( $element['label'] );
+		}
+
+		if ( isset( $element['help'] ) ) {
+			$thb_field->help( $element['help'] );
+		}
+
 		$thb_field->render();
 	}
 
@@ -131,9 +139,11 @@ abstract class THB_FieldsContainer {
 	 */
 	private function render_group( $group )
 	{
-		foreach ( $group['fields'] as $index => $field ) {
-			$this->render_field( $field );
-		}
+		echo '<div class="thb-group">';
+			foreach ( $group['fields'] as $index => $field ) {
+				$this->render_field( $field );
+			}
+		echo '</div>';
 	}
 
 	/**
@@ -176,7 +186,13 @@ abstract class THB_FieldsContainer {
 			if ( $element['type'] === 'group' && array_key_exists( 'fields', $element ) && is_array( $element['fields'] ) ) {
 				$groups++;
 
-				if ( ! self::_validate_fields_structure( $element['fields'] ) ) {
+				if ( ! array_key_exists( 'handle', $element ) || empty( $element['handle'] ) ) {
+					return false;
+				}
+				elseif ( ! array_key_exists( 'label', $element ) || empty( $element['label'] ) ) {
+					return false;
+				}
+				elseif ( ! self::_validate_fields_structure( $element['fields'] ) ) {
 					return false;
 				}
 			}

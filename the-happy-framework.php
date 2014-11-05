@@ -99,6 +99,9 @@ class THB_Framework {
 		/* Framework classes folder. */
 		define( 'THB_FRAMEWORK_CLASSES_FOLDER', trailingslashit( THB_FRAMEWORK_FOLDER . 'classes' ) );
 
+		/* Framework templates folder. */
+		define( 'THB_FRAMEWORK_TEMPLATES_FOLDER', trailingslashit( THB_FRAMEWORK_FOLDER . 'templates' ) );
+
 		/* Framework includes. */
 		$this->_includes();
 
@@ -150,8 +153,14 @@ class THB_Framework {
 	 */
 	private function _includes()
 	{
+		/* String utilities. */
+		require_once( THB_FRAMEWORK_INCLUDES_FOLDER . 'string.php' );
+
 		/* General system utilities. */
 		require_once( THB_FRAMEWORK_INCLUDES_FOLDER . 'system.php' );
+
+		/* Templating utilities. */
+		require_once( THB_FRAMEWORK_INCLUDES_FOLDER . 'templates.php' );
 
 		/* Core classes. */
 		$this->_includes_core();

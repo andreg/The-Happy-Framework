@@ -28,7 +28,7 @@ abstract class THB_Field {
 	 *
 	 * @var string
 	 */
-	private $handle = '';
+	private $_handle = '';
 
 	/**
 	 * The field data value.
@@ -45,6 +45,20 @@ abstract class THB_Field {
 	private $_default = false;
 
 	/**
+	 * A brief definition of the field control function.
+	 *
+	 * @var string
+	 */
+	private $_label = '';
+
+	/**
+	 * An help text of the field control function.
+	 *
+	 * @var mixed
+	 */
+	private $_help = false;
+
+	/**
 	 * Constructor for the field class.
 	 *
 	 * @param string $handle A slug-like definition of the field handle.
@@ -53,8 +67,8 @@ abstract class THB_Field {
 	 */
 	function __construct( $handle, $type )
 	{
-		$this->_type = $type;
-		$this->handle = $handle;
+		$this->_type   = $type;
+		$this->_handle = $handle;
 	}
 
 	/**
@@ -77,6 +91,108 @@ abstract class THB_Field {
 	private function get_default()
 	{
 		return $this->_default;
+	}
+
+	/**
+	 * Set the field label.
+	 *
+	 * @since 1.0.0
+	 * @param string $label The field label.
+	 */
+	private function set_label( $label )
+	{
+		$this->_label = $label;
+	}
+
+	/**
+	 * Get the field label.
+	 *
+	 * @since 1.0.0
+	 * @return string
+	 */
+	private function get_label()
+	{
+		return $this->_label;
+	}
+
+	/**
+	 * Set the field help text.
+	 *
+	 * @since 1.0.0
+	 * @param array $help The field help text.
+	 */
+	private function set_help( $help )
+	{
+		$help_types = array(
+			'inline',
+			'popup'
+		);
+
+		if ( is_array( $help ) ) {
+			if ( ! isset( $help['type'] ) || ! in_array( $help['type'], $help_types ) ) {
+				$help['type'] = 'inline';
+			}
+
+			if ( ! isset( $help['text'] ) ) {
+				$help['text'] = '';
+			}
+		}
+		elseif ( is_string( $help ) ) {
+			$help = array(
+				'type' => 'inline',
+				'text' => $help
+			);
+		}
+		else {
+			$help = false;
+		}
+
+		$this->_help = $help;
+	}
+
+	/**
+	 * Get the field help text.
+	 *
+	 * @since 1.0.0
+	 * @return array
+	 */
+	private function get_help()
+	{
+		return $this->_help;
+	}
+
+	/**
+	 * Set or retrieve the field label.
+	 *
+	 * @since 1.0.0
+	 * @param boolean|string $label A brief definition of the field control function.
+	 * @return string
+	 */
+	public function label( $label = false )
+	{
+		if ( $label === false ) {
+			return $this->get_label();
+		}
+		else {
+			$this->set_label( $label );
+		}
+	}
+
+	/**
+	 * Set or retrieve the field help text.
+	 *
+	 * @since 1.0.0
+	 * @param boolean|array $help An help text of the field control function.
+	 * @return array
+	 */
+	public function help( $help = false )
+	{
+		if ( $help === false ) {
+				return $this->get_help();
+			}
+			else {
+				$this->set_help( $help );
+			}
 	}
 
 	/**
@@ -162,14 +278,52 @@ abstract class THB_Field {
 	 * @since 1.0.0
 	 * @return string The field handle.
 	 */
-	protected function handle()
+	public function handle()
 	{
-		return $this->handle;
+		return $this->_handle;
 	}
 
+	/**
+	 * Render the field label.
+	 *
+	 * @since 1.0.0
+	 */
+	private function _render_label()
+	{
+		if ( $this->label() != '' ) {
+			printf( '<h4 class="thb-label">%s</h4>', esc_html( $this->label() ) );
+		}
+	}
+
+	/**
+	 * Render the field help text.
+	 *
+	 * @since 1.0.0
+	 */
+	private function _render_help()
+	{
+		$help = $this->help();
+
+		if ( $help !== false && $help['text'] != '' ) {
+			printf( '<div class="thb-help thb-help-%s">%s</div>', esc_attr( $help['type'] ), esc_html( $help['text'] ) );
+		}
+	}
+
+	/**
+	 * Render the field interface.
+	 *
+	 * @since 1.0.0
+	 */
 	public function render()
 	{
-		echo "<pre>" . print_r( "Field: {$this->handle}, {$this->value()}", true ) . "</pre>";
+		printf( '<div class="%s">', esc_attr( implode( ' ', $this->classes() ) ) );
+			$this->_render_label();
+			$this->_render_help();
+
+			thb_template( THB_FRAMEWORK_TEMPLATES_FOLDER . "fields/{$this->_type}", array(
+				'field' => $this
+			) );
+		echo '</div>';
 	}
 
 	/**
