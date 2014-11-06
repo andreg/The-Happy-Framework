@@ -35,3 +35,12 @@ function thb_require( $file ) {
 
 	return $path;
 }
+
+/**
+ * Return an array of defined field types.
+ *
+ * @return array
+ */
+function thb_field_types() {
+	return apply_filters( 'thb_field_types', array() );
+}

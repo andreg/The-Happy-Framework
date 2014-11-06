@@ -65,10 +65,25 @@ abstract class THB_Field {
 	 * @param string $type A slug-like definition of the field type.
 	 * @since 1.0.0
 	 */
-	function __construct( $handle, $type )
+	function __construct( $data = array() )
 	{
-		$this->_type   = $type;
-		$this->_handle = $handle;
+		$this->_type = $data['type'];
+
+		if ( isset( $data['default'] ) ) {
+			$this->default_value( $data['default'] );
+		}
+
+		if ( isset( $data['value'] ) ) {
+			$this->value( $data['value'] );
+		}
+
+		if ( isset( $data['label'] ) ) {
+			$this->label( $data['label'] );
+		}
+
+		if ( isset( $data['help'] ) ) {
+			$this->help( $data['help'] );
+		}
 	}
 
 	/**
@@ -119,35 +134,38 @@ abstract class THB_Field {
 	 * Set the field help text.
 	 *
 	 * @since 1.0.0
-	 * @param array $help The field help text.
+	 * @param array|string $help The field help text.
 	 */
 	private function set_help( $help )
 	{
 		$help_types = array(
 			'inline',
+			'expand',
 			'popup'
 		);
 
-		if ( is_array( $help ) ) {
-			if ( ! isset( $help['type'] ) || ! in_array( $help['type'], $help_types ) ) {
-				$help['type'] = 'inline';
+		$field_help = array(
+			'type' => 'inline',
+			'text' => ''
+		);
+
+		if ( is_string( $help ) ) {
+			$field_help['text'] = $help;
+		}
+		elseif ( is_array( $help ) ) {
+			if ( isset( $help['type'] ) && in_array( $help['type'], $help_types ) ) {
+				$field_help['type'] = $help['type'];
 			}
 
-			if ( ! isset( $help['text'] ) ) {
-				$help['text'] = '';
+			if ( isset( $help['text'] ) ) {
+				$field_help['text'] = $help['text'];
 			}
-		}
-		elseif ( is_string( $help ) ) {
-			$help = array(
-				'type' => 'inline',
-				'text' => $help
-			);
 		}
 		else {
-			$help = false;
+			$field_help = false;
 		}
 
-		$this->_help = $help;
+		$this->_help = $field_help;
 	}
 
 	/**
@@ -305,8 +323,34 @@ abstract class THB_Field {
 		$help = $this->help();
 
 		if ( $help !== false && $help['text'] != '' ) {
-			printf( '<div class="thb-help thb-help-%s">%s</div>', esc_attr( $help['type'] ), esc_html( $help['text'] ) );
+			$help_text = esc_html( $help['text'] );
+
+			printf( '<div class="thb-help thb-help-%s">', esc_attr( $help['type'] ) );
+				switch( $help['type'] ) {
+					case 'expand':
+					case 'popup':
+						printf( '<a href="#">%s</a>', '' );
+						echo $help_text;
+						break;
+					case 'inline':
+					default:
+						echo $help_text;
+						break;
+				}
+			echo '</div>';
 		}
+	}
+
+	/**
+	 * Render the field inner content.
+	 *
+	 * @since 1.0.0
+	 */
+	public function render_inner()
+	{
+		thb_template( THB_FRAMEWORK_TEMPLATES_FOLDER . "fields/{$this->_type}", array(
+			'field' => $this
+		) );
 	}
 
 	/**
@@ -319,10 +363,7 @@ abstract class THB_Field {
 		printf( '<div class="%s">', esc_attr( implode( ' ', $this->classes() ) ) );
 			$this->_render_label();
 			$this->_render_help();
-
-			thb_template( THB_FRAMEWORK_TEMPLATES_FOLDER . "fields/{$this->_type}", array(
-				'field' => $this
-			) );
+			$this->render_inner();
 		echo '</div>';
 	}
 
@@ -335,7 +376,7 @@ abstract class THB_Field {
 	 */
 	public static function validate_structure( $field )
 	{
-		$field_types = array_keys( apply_filters( 'thb_field_types', array() ) );
+		$field_types = array_keys( thb_field_types() );
 
 		if ( ! is_array( $field ) || empty( $field ) ) {
 			return false;

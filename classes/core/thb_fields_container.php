@@ -106,27 +106,11 @@ abstract class THB_FieldsContainer {
 	 * @since 1.0.0
 	 * @param array $element The field data.
 	 */
-	private function render_field( $element )
+	protected function render_field( $element )
 	{
-		$field_types = apply_filters( 'thb_field_types', array() );
+		$field_types = thb_field_types();
 		$field_class = $field_types[$element['type']];
-		$thb_field = new $field_class( $element['handle'] );
-
-		if ( isset( $element['default'] ) ) {
-			$thb_field->default_value( $element['default'] );
-		}
-
-		if ( isset( $element['value'] ) ) {
-			$thb_field->value( $element['value'] );
-		}
-
-		if ( isset( $element['label'] ) ) {
-			$thb_field->label( $element['label'] );
-		}
-
-		if ( isset( $element['help'] ) ) {
-			$thb_field->help( $element['help'] );
-		}
+		$thb_field = new $field_class( $element );
 
 		$thb_field->render();
 	}
