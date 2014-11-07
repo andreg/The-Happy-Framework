@@ -44,12 +44,7 @@ function thb_template( $path, $data = array(), $echo = true ) {
  */
 function thb_get_template_part( $file, $data = array(), $echo = true ) {
 	$file = thb_string_ensure_right( $file, '.php' );
-
-	// $path = locate_template( 'templates/' . $file );
-
-	if ( empty( $path ) ) {
-		$path = locate_template( $file );
-	}
+	$path = locate_template( $file );
 
 	return thb_template( $path, $data, $echo );
 }

@@ -39,6 +39,7 @@ function thb_require( $file ) {
 /**
  * Return an array of defined field types.
  *
+ * @since 1.0.0
  * @return array
  */
 function thb_field_types() {
