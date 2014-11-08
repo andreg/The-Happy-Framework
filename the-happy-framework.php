@@ -211,6 +211,7 @@ class THB_Framework {
 
 	/**
 	 * Return the instance of the frontend controller.
+	 *
 	 * @since 1.0.0
 	 * @return THB_FrontendController The instance of the frontend controller.
 	 */

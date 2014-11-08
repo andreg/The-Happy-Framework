@@ -42,6 +42,9 @@ class THB_MetaBox extends THB_FieldsContainer {
 
 		/* Register the meta box in WordPress. */
 		add_action( 'add_meta_boxes', array( $this, 'register' ) );
+
+		/* Register the saving action. */
+		add_action( 'save_post', array( $this, 'save' ) );
 	}
 
 	/**
@@ -57,6 +60,11 @@ class THB_MetaBox extends THB_FieldsContainer {
 		}
 	}
 
+	/**
+	* Render the metabox content.
+	*
+	* @since 1.0.0
+	*/
 	public function render()
 	{
 		$this->render_elements();
@@ -86,6 +94,40 @@ class THB_MetaBox extends THB_FieldsContainer {
 		}
 
 		return $fields;
+	}
+
+	/**
+	 * When the post is saved, save the custom data contained in the metabox.
+	 *
+	 * @since 1.0.0
+	 * @param int $post_id The ID of the post being saved.
+	 */
+	public function save( $post_id )
+	{
+		// if ( ! thb_user_can_save( $post_id, $nonce ) ) {
+		// 	return;
+		// }
+
+		$elements = $this->elements();
+
+		if ( ! empty( $elements ) ) {
+			foreach ( $elements as $index => $element ) {
+				if ( ! isset( $_POST[$element['handle']] ) ) {
+					delete_post_meta( $post_id, $element['handle'] );
+				}
+
+				if ( $element['type'] === 'group' ) {
+					foreach ( $element['fields'] as $field ) {
+						$value = THB_Field::sanitize( $field, $_POST[$field['handle']] );
+						update_post_meta( $post_id, $field['handle'], $value );
+					}
+				}
+				else {
+					$value = THB_Field::sanitize( $field, $_POST[$field['handle']] );
+					update_post_meta( $post_id, $element['handle'], $value );
+				}
+			}
+		}
 	}
 
 }

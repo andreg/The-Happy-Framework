@@ -45,3 +45,31 @@ function thb_require( $file ) {
 function thb_field_types() {
 	return apply_filters( 'thb_field_types', array() );
 }
+
+
+/**
+ * Determines whether or not the current user has the ability to save meta data
+ * associated with this post.
+ * Thanks to Tom McFarlin: https://gist.github.com/tommcfarlin/4468321
+ *
+ * @since 1.0.0
+ * @param int $post_id The ID of the post being saved.
+ * @param string $nonce The submitted nonce key.
+ * @return boolean Whether or not the user has the ability to save this post.
+ */
+function thb_user_can_save( $post_id, $nonce ) {
+	/* Verify the validity of the supplied nonce. */
+	$is_valid_nonce = true;
+	// $is_valid_nonce = ( isset( $_POST[$nonce] ) && wp_verify_nonce( $_POST[$nonce] ) );
+
+	/* Preventing to do anything when autosaving, editing a revision or performing an AJAX request. */
+	$is_autosave = wp_is_post_autosave( $post_id );
+    $is_revision = wp_is_post_revision( $post_id );
+	$is_ajax     = defined( 'DOING_AJAX' ) && DOING_AJAX;
+
+	/* Check the user has the capability to edit posts. */
+	$is_valid_cap 	= current_user_can( get_post_type_object( get_post_type( $post_id ) )->cap->edit_post, $post_id );
+
+	/* Return true if the user is able to save; otherwise, false. */
+    return ! ( $is_autosave || $is_revision || $is_ajax ) && $is_valid_nonce && $is_valid_cap;
+}

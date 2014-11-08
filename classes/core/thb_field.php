@@ -59,6 +59,13 @@ abstract class THB_Field {
 	private $_help = false;
 
 	/**
+	 * The handle of the bundle the field belongs to, if any.
+	 *
+	 * @var string
+	 */
+	private $_bundle = false;
+
+	/**
 	 * Constructor for the field class.
 	 *
 	 * @param string $handle A slug-like definition of the field handle.
@@ -68,6 +75,11 @@ abstract class THB_Field {
 	function __construct( $data = array() )
 	{
 		$this->_type = $data['type'];
+		$this->_handle = $data['handle'];
+
+		if ( isset( $data['bundle'] ) ) {
+			$this->_bundle = $data['bundle'];
+		}
 
 		if ( isset( $data['default'] ) ) {
 			$this->default_value( $data['default'] );
@@ -298,7 +310,13 @@ abstract class THB_Field {
 	 */
 	public function handle()
 	{
-		return $this->_handle;
+		$handle = $this->_handle;
+
+		if ( $this->_bundle !== false ) {
+			$handle = sprintf( '%s[%s]', $this->_bundle, $this->_handle );
+		}
+
+		return $handle;
 	}
 
 	/**
@@ -329,7 +347,7 @@ abstract class THB_Field {
 				switch( $help['type'] ) {
 					case 'expand':
 					case 'popup':
-						printf( '<a href="#">%s</a>', '' );
+						printf( '<a href="#" class="thb-help-handle">%s</a>', __( 'Need help?', 'thb-framework' ) );
 						echo $help_text;
 						break;
 					case 'inline':
@@ -370,6 +388,7 @@ abstract class THB_Field {
 	/**
 	 * Validate the field declaration structure.
 	 *
+	 * @static
 	 * @since 1.0.0
 	 * @param array $field The field declaration structure.
 	 * @return boolean
@@ -395,6 +414,38 @@ abstract class THB_Field {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Sanitize the field value upon form submission.
+	 *
+	 * @since 1.0.0
+	 * @param array $field The field data structure.
+	 * @param mixed $value The field submitted value.
+	 * @return mixed The sanitized field value.
+	 */
+	public static function sanitize( $field, $value )
+	{
+		if ( ! array_key_exists( 'sanitize', $field ) ) {
+			return $value;
+		}
+
+		switch ( $field['type'] ) {
+			case 'bundle':
+				foreach ( $field['fields'] as $subfield ) {
+					$value[$subfield['handle']] = self::sanitize( $subfield, $value[$subfield['handle']] );
+				}
+				break;
+			default:
+				$sanitize_function = 'thb_sanitize_' . $field['sanitize'];
+
+				if ( function_exists( $sanitize_function ) ) {
+					$value = $sanitize_function( $value );
+				}
+				break;
+		}
+
+		return $value;
 	}
 
 }
