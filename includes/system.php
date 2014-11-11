@@ -57,10 +57,10 @@ function thb_field_types() {
  * @param string $nonce The submitted nonce key.
  * @return boolean Whether or not the user has the ability to save this post.
  */
-function thb_user_can_save( $post_id, $nonce ) {
+function thb_user_can_save( $post_id, $nonce = '' ) {
 	/* Verify the validity of the supplied nonce. */
 	$is_valid_nonce = true;
-	// $is_valid_nonce = ( isset( $_POST[$nonce] ) && wp_verify_nonce( $_POST[$nonce] ) );
+	// $is_valid_nonce = ! empty( $nonce ) && ( isset( $_POST[$nonce] ) && wp_verify_nonce( $_POST[$nonce] ) );
 
 	/* Preventing to do anything when autosaving, editing a revision or performing an AJAX request. */
 	$is_autosave = wp_is_post_autosave( $post_id );

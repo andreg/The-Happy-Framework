@@ -40,7 +40,6 @@ $structure = array(
 			'type'   => 'text',
 			'handle' => 'test_2',
 			'label'  => 'A text field #2',
-			'default' => 'Bon Jovi',
 		),
 		array(
 			'type'   => 'bundle',
@@ -51,7 +50,6 @@ $structure = array(
 					'type'   => 'text',
 					'handle' => 'test_2',
 					'label'  => 'A text field #2',
-					'default' => 'Bon Jovi'
 				),
 				array(
 					'type'   => 'bundle',
@@ -62,13 +60,11 @@ $structure = array(
 							'type'   => 'text',
 							'handle' => 'test_4',
 							'label'  => 'A text field #2',
-							'default' => 'Bon Jovi'
 						),
 						array(
 							'type'   => 'text',
 							'handle' => 'test_5',
 							'label'  => 'A text field #3',
-							'default' => 'Stratocaster'
 						)
 					)
 				)
@@ -96,3 +92,10 @@ add_filter( 'thb_field_types', function( $types ) {
 	$types['bundle'] = 'THB_BundleField';
 	return $types;
 } );
+
+
+// echo "<pre>" . print_r( get_post_meta( 2, 'test_bundle', true ), true ) . "</pre>";
+
+// function thb_sanitize_add( $value ) {
+// 	return $value .= '_asd';
+// }

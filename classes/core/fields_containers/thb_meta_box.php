@@ -104,9 +104,9 @@ class THB_MetaBox extends THB_FieldsContainer {
 	 */
 	public function save( $post_id )
 	{
-		// if ( ! thb_user_can_save( $post_id, $nonce ) ) {
-		// 	return;
-		// }
+		if ( ! thb_user_can_save( $post_id ) ) {
+			return;
+		}
 
 		$elements = $this->elements();
 
@@ -118,12 +118,16 @@ class THB_MetaBox extends THB_FieldsContainer {
 
 				if ( $element['type'] === 'group' ) {
 					foreach ( $element['fields'] as $field ) {
-						$value = THB_Field::sanitize( $field, $_POST[$field['handle']] );
+						$value = stripslashes_deep( $_POST[$field['handle']] );
+						$value = THB_Field::sanitize( $field, $value );
+
 						update_post_meta( $post_id, $field['handle'], $value );
 					}
 				}
 				else {
-					$value = THB_Field::sanitize( $field, $_POST[$field['handle']] );
+					$value = stripslashes_deep( $_POST[$element['handle']] );
+					$value = THB_Field::sanitize( $field, $_POST[$element['handle']] );
+
 					update_post_meta( $post_id, $element['handle'], $value );
 				}
 			}

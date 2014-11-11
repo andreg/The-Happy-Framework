@@ -426,10 +426,6 @@ abstract class THB_Field {
 	 */
 	public static function sanitize( $field, $value )
 	{
-		if ( ! array_key_exists( 'sanitize', $field ) ) {
-			return $value;
-		}
-
 		switch ( $field['type'] ) {
 			case 'bundle':
 				foreach ( $field['fields'] as $subfield ) {
@@ -437,6 +433,10 @@ abstract class THB_Field {
 				}
 				break;
 			default:
+				if ( ! array_key_exists( 'sanitize', $field ) ) {
+					return $value;
+				}
+
 				$sanitize_function = 'thb_sanitize_' . $field['sanitize'];
 
 				if ( function_exists( $sanitize_function ) ) {
