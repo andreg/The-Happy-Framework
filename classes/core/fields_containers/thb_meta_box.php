@@ -67,6 +67,7 @@ class THB_MetaBox extends THB_FieldsContainer {
 	*/
 	public function render()
 	{
+		wp_nonce_field( 'thb_meta_box', 'thb' );
 		$this->render_elements();
 	}
 
@@ -104,7 +105,7 @@ class THB_MetaBox extends THB_FieldsContainer {
 	 */
 	public function save( $post_id )
 	{
-		if ( ! thb_user_can_save( $post_id ) ) {
+		if ( ! thb_user_can_save( $post_id, 'thb_meta_box' ) ) {
 			return;
 		}
 

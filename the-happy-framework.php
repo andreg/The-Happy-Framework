@@ -156,6 +156,9 @@ class THB_Framework {
 		/* String utilities. */
 		require_once( THB_FRAMEWORK_INCLUDES_FOLDER . 'string.php' );
 
+		/* Options utilities. */
+		require_once( THB_FRAMEWORK_INCLUDES_FOLDER . 'options.php' );
+
 		/* General system utilities. */
 		require_once( THB_FRAMEWORK_INCLUDES_FOLDER . 'system.php' );
 
