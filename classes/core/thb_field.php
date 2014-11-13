@@ -66,6 +66,13 @@ abstract class THB_Field {
 	private $_bundle = false;
 
 	/**
+	* Set to TRUE if the field is repeatable.
+	*
+	* @var boolean
+	*/
+	private $_repeatable = false;
+
+	/**
 	 * Constructor for the field class.
 	 *
 	 * @param string $handle A slug-like definition of the field handle.
@@ -79,6 +86,10 @@ abstract class THB_Field {
 
 		if ( isset( $data['bundle'] ) ) {
 			$this->_bundle = $data['bundle'];
+		}
+
+		if ( isset( $data['repeatable'] ) && $data['repeatable'] === true ) {
+			$this->_repeatable = true;
 		}
 
 		if ( isset( $data['default'] ) ) {
@@ -313,10 +324,32 @@ abstract class THB_Field {
 		$handle = $this->_handle;
 
 		if ( $this->_bundle !== false ) {
-			$handle = sprintf( '%s[%s]', $this->_bundle, $this->_handle );
+			if ( $this->_repeatable !== true ) {
+				$handle = sprintf( '%s[%s]', $this->_bundle, $this->_handle );
+			}
+			else {
+				$handle = sprintf( '%s[][%s]', $this->_bundle, $this->_handle );
+			}
+		}
+		elseif ( $this->_repeatable === true ) {
+			$handle .= '[]';
 		}
 
 		return $handle;
+	}
+
+	/**
+	 * Render the field repeatable controls.
+	 *
+	 * @since 1.0.0
+	 */
+	private function _render_repeatable_controls()
+	{
+		if ( ! $this->_repeatable ) {
+			return;
+		}
+
+		printf( '<a href="#" class="thb-repeat">%s</a>', esc_html( __( 'Add', 'thb-framework' ) ) );
 	}
 
 	/**
@@ -366,9 +399,13 @@ abstract class THB_Field {
 	 */
 	public function render_inner()
 	{
-		thb_template( THB_FRAMEWORK_TEMPLATES_FOLDER . "fields/{$this->_type}", array(
-			'field' => $this
-		) );
+		echo "<pre>" . print_r( $this->handle(), true ) . "</pre>";
+
+		echo '<div class="thb-field-inner">';
+			thb_template( THB_FRAMEWORK_TEMPLATES_FOLDER . "fields/{$this->_type}", array(
+				'field' => $this
+			) );
+		echo '</div>';
 	}
 
 	/**
@@ -379,9 +416,13 @@ abstract class THB_Field {
 	public function render()
 	{
 		printf( '<div class="%s">', esc_attr( implode( ' ', $this->classes() ) ) );
+			$this->_render_repeatable_controls();
 			$this->_render_label();
 			$this->_render_help();
-			$this->render_inner();
+
+			echo '<div class="thb-container">';
+				$this->render_inner();
+			echo '</div>';
 		echo '</div>';
 	}
 
