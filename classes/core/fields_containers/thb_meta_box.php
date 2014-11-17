@@ -67,8 +67,10 @@ class THB_MetaBox extends THB_FieldsContainer {
 	*/
 	public function render()
 	{
-		wp_nonce_field( 'thb_meta_box', 'thb' );
-		$this->render_elements();
+		echo '<div class="thb">';
+			wp_nonce_field( 'thb_meta_box', 'thb' );
+			$this->render_elements();
+		echo '</div>';
 	}
 
 	/**

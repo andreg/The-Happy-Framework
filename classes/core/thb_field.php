@@ -349,7 +349,9 @@ abstract class THB_Field {
 			return;
 		}
 
-		printf( '<a href="#" class="thb-repeat">%s</a>', esc_html( __( 'Add', 'thb-framework' ) ) );
+		echo '<div class="thb-repeatable-controls">';
+			printf( '<a href="#" class="thb-repeat">%s</a>', esc_html( __( 'Add', 'thb-framework' ) ) );
+		echo '</div>';
 	}
 
 	/**
@@ -399,8 +401,6 @@ abstract class THB_Field {
 	 */
 	public function render_inner()
 	{
-		echo "<pre>" . print_r( $this->handle(), true ) . "</pre>";
-
 		echo '<div class="thb-field-inner">';
 			thb_template( THB_FRAMEWORK_TEMPLATES_FOLDER . "fields/{$this->_type}", array(
 				'field' => $this
@@ -416,11 +416,13 @@ abstract class THB_Field {
 	public function render()
 	{
 		printf( '<div class="%s">', esc_attr( implode( ' ', $this->classes() ) ) );
-			$this->_render_repeatable_controls();
-			$this->_render_label();
-			$this->_render_help();
+			echo '<div class="thb-field-header">';
+				$this->_render_label();
+				$this->_render_help();
+			echo '</div>';
 
 			echo '<div class="thb-container">';
+				$this->_render_repeatable_controls();
 				$this->render_inner();
 			echo '</div>';
 		echo '</div>';
