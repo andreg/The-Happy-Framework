@@ -31,6 +31,12 @@ class THB_AdminController extends THB_Controller {
 	 */
 	function __construct()
 	{
+		/* Add the Javascript file for admin components. */
+		$this->add_script( 'thb-admin', THB_FRAMEWORK_URI . 'assets/js/min/admin.min.js' );
+
+		/* Add the CSS file for admin components. */
+		$this->add_style( 'thb-admin', THB_FRAMEWORK_URI . 'assets/css/admin.css' );
+
 		/* Bind the enqueue of scripts and stylesheets. */
 		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ), apply_filters( 'thb_admin_enqueue_scripts_priority', 20 ) );
 	}
